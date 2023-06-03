@@ -1,6 +1,8 @@
+import 'package:bytebank/components/progress.dart';
 import 'package:bytebank/database/dao/contact_dao.dart';
 import 'package:bytebank/models/Contact.dart';
 import 'package:bytebank/screens/contact_form.dart';
+import 'package:bytebank/screens/transaction_form.dart';
 import 'package:flutter/material.dart';
 
 class ContactsList extends StatefulWidget {
@@ -9,7 +11,6 @@ class ContactsList extends StatefulWidget {
 }
 
 class _ContactsListState extends State<ContactsList> {
-
   final ContactDao _dao = ContactDao();
 
   @override
@@ -27,31 +28,30 @@ class _ContactsListState extends State<ContactsList> {
             case ConnectionState.none:
               break;
             case ConnectionState.waiting:
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: const [
-                    CircularProgressIndicator(),
-                    Text('Carregando')
-                  ],
-                ),
-              );
+              return Progress();
 
             case ConnectionState.active:
               break;
             case ConnectionState.done:
               final List contacts = snapshot.data ?? [];
               return ListView.builder(
-                itemCount: contacts.length,
                 itemBuilder: (context, index) {
                   final contact = contacts[index];
-                  return _ContactItem(contact!);
+                  return _ContactItem(
+                    contact,
+                    onClick: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => TransactionForm(contact),
+                        ),
+                      );
+                    },
+                  );
                 },
+                itemCount: contacts.length,
               );
-
           }
-          return Text('Unknown error');
+          return Text('unknown error!');
         },
       ),
       floatingActionButton: FloatingActionButton(
@@ -71,18 +71,23 @@ class _ContactsListState extends State<ContactsList> {
 }
 
 class _ContactItem extends StatelessWidget {
-  final Contact _transferencia;
+  final Contact contato;
+  final Function onClick;
 
-  _ContactItem(this._transferencia);
+  _ContactItem(
+      this.contato, {
+        required this.onClick,
+      });
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return Card(
       child: ListTile(
+        onTap: () => onClick(),
         leading: Icon(Icons.people),
-        title: Text(_transferencia.name),
-        subtitle: Text(_transferencia.accountNumber.toString()),
+        title: Text(contato.name),
+        subtitle: Text(contato.accountNumber.toString()),
       ),
     );
   }
