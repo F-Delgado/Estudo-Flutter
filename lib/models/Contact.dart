@@ -1,4 +1,4 @@
-class Contact {
+class Contact{
   final int id;
   final String name;
   final int accountNumber;
@@ -11,6 +11,6 @@ class Contact {
 
   @override
   String toString() {
-    return 'Transferencia{id: $id, Nome: $name, Contato: $accountNumber}';
+    return 'Contact{id: $id, Nome: $name, Conta: $accountNumber}';
   }
 }
